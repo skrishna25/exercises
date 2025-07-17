@@ -83,6 +83,7 @@ aws iam list-groups-for-user --user-name <username>
 ```
 
 ## s3 Bucket
+```bash
 # List all accessible buckets
 aws s3 ls
 
