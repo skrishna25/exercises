@@ -1,81 +1,99 @@
-Welcome to a Server-Side Request Forgery (SSRF) simulation designed for safe and responsible security learning. This lab demonstrates how attackers might abuse SSRF vulnerabilities in misconfigured cloud applications — particularly when internal metadata services are not properly protected.
+# SSRF Lab: Spot the Obfuscation
 
-⚠️ For educational use only. Do not use these techniques on real systems without explicit permission.
+Welcome to a simulated **Server-Side Request Forgery (SSRF)** lab environment, designed for cloud security enthusiasts, researchers, and students. This lab showcases how attackers might exploit SSRF vulnerabilities in cloud-native environments and how small mistakes in input validation can lead to big cloud exposures.
 
-🔍 What is SSRF?
-Server-Side Request Forgery (SSRF) occurs when a server-side application fetches remote resources based on untrusted user input. This can lead to:
+>  This project is for **educational purposes only**. All activity must remain within the boundaries of your local or lab environment.
 
-Accessing internal services
+---
 
-Reading cloud metadata endpoints
+## What is SSRF?
 
-Leveraging IP interpretation quirks
+**SSRF (Server-Side Request Forgery)** is a vulnerability that allows an attacker to make the server issue HTTP requests to arbitrary destinations — including internal services that are otherwise inaccessible from the internet.
 
-🎯 Challenge Goals
-Understand SSRF risks in cloud-native apps
+In cloud environments like AWS, GCP, and Azure, SSRF is particularly dangerous because it can be used to:
 
-Interact with the vulnerable input field
+- Access **cloud metadata services**
+- Steal **temporary IAM credentials**
+- Move laterally or escalate privileges
 
-Explore how different URL formats behave
+---
 
-Discover how encoding and numeric representations affect filters
+##  Lab Objective
 
-🚧 SSRF Filter Behavior
-Requests to well-known internal IPs (e.g., 169.254.169.254) are blocked
+This lab challenges you to:
 
-However, not all numeric IPs look like IPs
+- Interact with a web UI that includes an SSRF-prone input
+- Bypass SSRF filters using **creative obfuscation**
+- Attempt to access sensitive internal metadata in a **controlled** and **logged** environment
+- Learn how detection and prevention mechanisms work
 
-Some encodings or conversions may evade simple filters
+There are multiple paths to success. Not all IPs look like IPs — can you find one that slips through?
 
-🧠 Can you find a safe way to represent a restricted IP?
+Once you findout client_id, Secret and token 
 
-☁️ AWS S3 Integration
-This section allows you to simulate cloud exposure by uploading your app or SSRF artifacts to Amazon S3.
+##  Configure AWS CLI
 
-✅ Configure AWS CLI
-bash
-Copy
-Edit
+```bash
 aws configure
+```
 You'll be prompted to enter:
 
-Access Key ID
+- **AWS Access Key ID**
+- **AWS Secret Access Key**
+- **Default region name** (e.g., `us-east-1`)
+- **Default output format** (e.g., `json`)
 
-Secret Access Key
+Now you try validating whether tokens are configured correctly 
+```bash
+aws sts get-session-token
+```
+# AWS CLI Reconnaissance Cheat Sheet
 
-Default region (e.g., ap-south-1)
+This guide provides common **AWS CLI** commands used during cloud reconnaissance activities. Use these commands to enumerate IAM roles, EC2 instances, S3 buckets, and other resources.
 
-Output format (e.g., json)
+## IAM Enumeration
 
-📦 Create an S3 Bucket
-bash
-Copy
-Edit
-aws s3 mb s3://your-unique-bucket-name
-📁 Upload Lab Files
-bash
-Copy
-Edit
-aws s3 cp . s3://your-unique-bucket-name/ssrf-lab/ --recursive
-🌐 Make an Image Public (Optional)
-bash
-Copy
-Edit
-aws s3 cp ssrf.png s3://your-unique-bucket-name/ssrf-lab/ssrf.png --acl public-read
-📘 Notes for GitHub
-This project is safe for GitHub and educational platforms.
+```bash
+# List IAM users
+aws iam list-users
 
-It does not contain active exploitation code or direct payloads.
+# List IAM roles
+aws iam list-roles
 
-Metadata access logic is handled on the backend with strict filters.
+# List IAM groups
+aws iam list-groups
 
-Obfuscation challenges are presented purely for learning how filters work.
+# List IAM policies
+aws iam list-policies --scope Local
 
-🙋 Want More?
-Add CloudTrail or IAM role tracing
+# Get current caller identity (whoami equivalent)
+aws sts get-caller-identity
 
-Expand the app to simulate attacker movement after SSRF
+# Get IAM user details
+aws iam get-user
 
-Show how credentials obtained through SSRF can affect cloud resources
+# List attached policies for a user
+aws iam list-attached-user-policies --user-name <username>
 
-Let me know if you'd like a GitHub Acti
+# Get inline policies for a user
+aws iam list-user-policies --user-name <username>
+
+# Enumerate group membership
+aws iam list-groups-for-user --user-name <username>
+```
+
+## s3 Bucket
+# List all accessible buckets
+aws s3 ls
+
+# List contents of a specific bucket
+aws s3 ls s3://<bucket-name>
+
+# Try downloading a file from an S3 bucket
+aws s3 cp s3://<bucket-name>/<file> .
+
+# Sync the entire bucket locally
+aws s3 sync s3://<bucket-name> ./local-folder
+```
+
+
