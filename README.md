@@ -45,7 +45,7 @@ You'll be prompted to enter:
 
 Now you try validating whether tokens are configured correctly 
 ```bash
-aws sts get-session-token
+aws sts get-caller-identity
 ```
 # AWS CLI Reconnaissance Cheat Sheet
 
